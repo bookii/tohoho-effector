@@ -12,5 +12,16 @@ export default defineConfig(({ mode }) => {
     server: {
       port: parseInt(env.VITE_BACKEND_PORT),
     },
+    build: {
+      lib: {
+        entry: "src/index.ts",
+        name: "index",
+        fileName: "index",
+        formats: ["es"],
+      },
+      rollupOptions: {
+        external: ["@hono/node-server"],
+      },
+    },
   };
 });
