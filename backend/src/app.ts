@@ -1,3 +1,4 @@
+import { serveStatic } from "@hono/node-server/serve-static";
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { SSEStreamingApi, streamSSE } from "hono/streaming";
@@ -62,7 +63,8 @@ export const app = new Hono()
         await stream.sleep(30000);
       }
     });
-  });
+  })
+  .use("*", serveStatic({ root: "./frontend/dist" }));
 
 export type AppType = typeof app;
 
