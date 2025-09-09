@@ -1,0 +1,31 @@
+{
+  "name": "frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --mode dev",
+    "build": "vite build --mode dev",
+    "build:stg": "vite build --mode stg",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^6.2.0",
+    "@tsconfig/svelte": "^5.0.5",
+    "svelte": "^5.38.8",
+    "svelte-check": "^4.3.1",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.5"
+  },
+  "dependencies": {
+    "@lucide/svelte": "^0.543.0",
+    "@mateothegreat/svelte5-router": "^2.16.19",
+    "@tailwindcss/vite": "^4.1.13",
+    "@techstark/opencv-js": "4.11.0-release.1",
+    "backend": "workspace:*",
+    "class-variance-authority": "^0.7.1",
+    "shared": "workspace:*",
+    "tailwindcss": "^4.1.13"
+  }
+}
