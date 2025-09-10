@@ -22,7 +22,6 @@ export const detectFacePositions = async (
 
   const cv = await cvReadyPromise;
   const file = await fetch("/cascades/lbpcascade_animeface.xml");
-  console.log(await file.text());
   const arrayBuffer = new Uint8Array(await file.arrayBuffer());
   try {
     cv.FS_createDataFile(
@@ -44,7 +43,6 @@ export const detectFacePositions = async (
   const faces = new cv.RectVector();
   const classifier = new cv.CascadeClassifier();
   try {
-    await new Promise((resolve) => setTimeout(resolve, 10000));
     classifier.load("/lbpcascade_animeface.xml");
   } catch (error: unknown) {
     console.error("Error loading cascade classifier:", error);
