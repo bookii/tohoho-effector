@@ -58,7 +58,7 @@ export const app = new Hono()
     return streamSSE(c, async (stream) => {
       session.stream = stream;
       while (true) {
-        stream.writeSSE({ data: "ping", event: "ping" });
+        await stream.writeSSE({ data: "ping", event: "ping" });
         await stream.sleep(30000);
       }
     });

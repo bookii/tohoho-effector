@@ -121,18 +121,22 @@
     ).takePhoto();
     const bitmap = await createImageBitmap(blob);
 
-    const faces = await FaceDetectorService.detectFacePositions(bitmap);
-    faceDetectionStatus =
-      faces.length > 0
-        ? {
-            type: "success",
-            position: {
-              ...faces[Math.floor(Math.random() * faces.length)],
-              bitmapWidth: bitmap.width,
-              bitmapHeight: bitmap.height,
-            },
-          }
-        : { type: "failure" };
+    try {
+      const faces = await FaceDetectorService.detectFacePositions(bitmap);
+      faceDetectionStatus =
+        faces.length > 0
+          ? {
+              type: "success",
+              position: {
+                ...faces[Math.floor(Math.random() * faces.length)],
+                bitmapWidth: bitmap.width,
+                bitmapHeight: bitmap.height,
+              },
+            }
+          : { type: "failure" };
+    } catch (error) {
+      faceDetectionStatus = { type: "failure" };
+    }
   };
 
   const goToStep1 = async () => {
