@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { SSEStreamingApi, streamSSE } from "hono/streaming";
 import {
+  deleteStreamQuerySchema,
   getStreamQuerySchema,
   irisOutEffectStateSchema,
   type IrisOutEffectState,
@@ -81,11 +82,6 @@ export const app = new Hono()
       return c.json({ error: "Session not found or expired" }, 404);
     }
     return streamSSE(c, async (stream) => {
-      c.req.raw.signal.onabort = () => {
-        stream.abort();
-        sessions.delete(sourceId);
-        logSessionCount();
-      };
       session.stream = stream;
       logSessionCount();
       while (true) {
@@ -93,6 +89,16 @@ export const app = new Hono()
         await stream.sleep(30000);
       }
     });
+  })
+  .delete("/streams", zValidator("query", deleteStreamQuerySchema), (c) => {
+    const { sourceId } = c.req.valid("query");
+    const session = sessions.get(sourceId);
+    if (!session || session.expiresAt < Date.now()) {
+      return c.json({ error: "Session not found or expired" }, 404);
+    }
+    sessions.delete(sourceId);
+    logSessionCount();
+    return c.body(null, 204);
   });
 
 export type AppType = typeof app;

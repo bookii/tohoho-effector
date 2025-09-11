@@ -26,9 +26,20 @@ export const getStreamQuerySchema = z
     };
   });
 
+export const deleteStreamQuerySchema = z
+  .object({
+    source_id: z.string(),
+  })
+  .transform((data) => {
+    return {
+      sourceId: data.source_id,
+    };
+  });
+
 export type IrisOutEffectFacePosition = z.infer<
   typeof irisOutEffectFacePositionSchema
 >;
 export type IrisOutEffectStep = z.infer<typeof irisOutEffectStepSchema>;
 export type IrisOutEffectState = z.infer<typeof irisOutEffectStateSchema>;
 export type GetStreamQuery = z.infer<typeof getStreamQuerySchema>;
+export type DeleteStreamQuery = z.infer<typeof deleteStreamQuerySchema>;

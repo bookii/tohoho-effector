@@ -21,6 +21,29 @@
   import type { IrisOutEffectFacePosition, IrisOutEffectStep } from "shared";
   import { tick } from "svelte";
 
+  const deleteStream = async () => {
+    if (!sourceId) {
+      return;
+    }
+    await apiClient.streams.$delete({
+      query: { source_id: sourceId },
+    });
+  };
+
+  window.addEventListener("beforeunload", async () => {
+    deleteStream();
+  });
+
+  window.addEventListener("load", () => {
+    const performanceEntries = performance.getEntriesByType("navigation");
+    if (
+      performanceEntries.length > 0 &&
+      performanceEntries[0].entryType === "reload"
+    ) {
+      deleteStream();
+    }
+  });
+
   const irisOutEffectAnimator = $derived.by(() => {
     // faceDetectionStatus が変わったときだけ再初期化
     if (faceDetectionStatus?.type !== "success") {
@@ -97,6 +120,7 @@
         videoStep1Element = element;
         videoStep1Element.srcObject = mediaStream;
       }
+      step1ErrorMessage = undefined;
     } catch (error: unknown) {
       if (error instanceof Error) {
         step1ErrorMessage = error.message;
@@ -382,14 +406,16 @@
               URLをコピー
             </Button>
           </div>
-          <p class="text-xs text-base-foreground-muted">
-            {#if sourceExpiresAt}
-              このページを閉じるか {new Date(sourceExpiresAt).toLocaleString()} を過ぎると
-              URL は無効になります
-            {:else}
-              このページを閉じると URL は無効になります
-            {/if}
-          </p>
+          <div class="space-y-1">
+            <p class="text-xs text-base-foreground-muted">
+              {#if sourceExpiresAt}
+                URLは <strong>
+                  {new Date(sourceExpiresAt).toLocaleString()}
+                </strong> まで有効
+              {/if}
+              (このページを閉じるか再読み込みをすると無効になります)
+            </p>
+          </div>
         </div>
         <Button
           variant="primary"
