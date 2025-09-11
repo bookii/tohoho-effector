@@ -264,15 +264,19 @@
   };
 </script>
 
-<div class="mx-auto max-w-2xl space-y-4 p-4">
+<div class="mx-auto max-w-3xl space-y-4 p-4">
   <div id="step0" class="flex flex-col space-y-6 px-6 pt-8 pb-10">
     <div class="flex flex-col items-center space-y-4">
       <h1 class="text-3xl font-bold">とほほエフェクター</h1>
-      <p class="text-center text-sm/relaxed text-base-foreground-muted">
-        「とほほ…もうこりごりだよ〜」でおなじみのアイリスアウト効果を配信画面にかけるツールです。<br
-        />
-        OBS Studio の仮想カメラを利用して、VTuber さんの顔の位置を検出します。
-      </p>
+      <div>
+        <p class="text-center text-sm/relaxed text-base-foreground-muted">
+          「とほほ…もうこりごりだよ〜」のエフェクト (アイリスアウト)
+          を配信画面にかけるツールです。
+        </p>
+        <p class="text-center text-sm/relaxed text-base-foreground-muted">
+          OBS Studio の仮想カメラを利用して、VTuber さんの顔の位置を検出します。
+        </p>
+      </div>
     </div>
     <div class="relative">
       <div
@@ -294,7 +298,7 @@
     <div id="step1" class="scroll-mt-4" class:min-h-screen={currentStep === 1}>
       <Card>
         <div class="flex flex-col space-y-2">
-          <p class="text-xs">ステップ1/4</p>
+          <p class="text-xs">ステップ 1/4</p>
           <h2 class="text-2xl font-bold">OBS Studio の仮想カメラの設定</h2>
         </div>
         <div>
@@ -351,12 +355,12 @@
     <div id="step2" class="scroll-mt-4" class:min-h-screen={currentStep === 2}>
       <Card>
         <div class="flex flex-col space-y-2">
-          <p class="text-xs">ステップ2/4</p>
-          <h2 class="text-2xl font-bold">アイリスアウト効果のレイヤー設定</h2>
+          <p class="text-xs">ステップ 2/4</p>
+          <h2 class="text-2xl font-bold">ブラウザソースの設定</h2>
         </div>
         <Message class="!items-center">
           <p class="text-sm">
-            アイリスアウト効果をかけるレイヤーとして、ブラウザソースを利用します。
+            アイリスアウトをかけるレイヤーとして、ブラウザソースを利用します。
           </p>
         </Message>
         <div>
@@ -381,7 +385,7 @@
               </ul>
             </li>
             <li>
-              追加したブラウザソースを、アイリスアウト効果を適用したいソースの上に移動させます。
+              追加したブラウザソースを、アイリスアウトを適用したいソースの上のレイヤーに移動させます。
             </li>
             <li>
               ブラウザソースの設定が完了したら、「次へ」ボタンをクリックします。
@@ -431,7 +435,7 @@
     <div id="step3" class="scroll-mt-4" class:min-h-screen={currentStep === 3}>
       <Card>
         <div class="flex flex-col space-y-2">
-          <p class="text-xs">ステップ3/4</p>
+          <p class="text-xs">ステップ 3/4</p>
           <h2 class="text-2xl font-bold">顔の位置の検出</h2>
         </div>
         <div>
@@ -496,7 +500,7 @@
     <div id="step4" class="scroll-mt-4" class:min-h-screen={currentStep === 4}>
       <Card>
         <div class="flex flex-col space-y-2">
-          <p class="text-xs">ステップ4/4</p>
+          <p class="text-xs">ステップ 4/4</p>
           <h2 class="text-2xl font-bold">アイリスアウト効果の適用</h2>
         </div>
         <ul class="list-disc px-6 text-sm">
