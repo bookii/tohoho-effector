@@ -381,6 +381,14 @@
             URLをコピー
           </Button>
         </div>
+        <p class="text-sm text-base-foreground-muted">
+          {#if sourceExpiresAt}
+            このページを閉じるか {new Date(sourceExpiresAt).toLocaleString()} を過ぎると
+            URL は無効になります
+          {:else}
+            このページを閉じると URL は無効になります
+          {/if}
+        </p>
         <Button
           variant="primary"
           disabled={currentStep !== 2 || !hasCopiedSourceUrl}
