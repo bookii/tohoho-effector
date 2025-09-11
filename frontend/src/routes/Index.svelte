@@ -364,31 +364,33 @@
             </li>
           </ol>
         </div>
-        <div class="flex flex-row space-x-2">
-          <Input
-            id="browser-source-url"
-            readonly
-            value={sourceUrl}
-            onclick={selectAll}
-            onfocus={selectAll}
-          />
-          <Button
-            variant="secondary"
-            class="w-auto text-nowrap"
-            onclick={onCopyWithButton}
-          >
-            <ClipboardCopy class="size-4" />
-            URLをコピー
-          </Button>
+        <div class="flex flex-col space-y-2">
+          <div class="flex flex-row space-x-2">
+            <Input
+              id="browser-source-url"
+              readonly
+              value={sourceUrl}
+              onclick={selectAll}
+              onfocus={selectAll}
+            />
+            <Button
+              variant="secondary"
+              class="w-auto text-nowrap"
+              onclick={onCopyWithButton}
+            >
+              <ClipboardCopy class="size-4" />
+              URLをコピー
+            </Button>
+          </div>
+          <p class="text-xs text-base-foreground-muted">
+            {#if sourceExpiresAt}
+              このページを閉じるか {new Date(sourceExpiresAt).toLocaleString()} を過ぎると
+              URL は無効になります
+            {:else}
+              このページを閉じると URL は無効になります
+            {/if}
+          </p>
         </div>
-        <p class="text-sm text-base-foreground-muted">
-          {#if sourceExpiresAt}
-            このページを閉じるか {new Date(sourceExpiresAt).toLocaleString()} を過ぎると
-            URL は無効になります
-          {:else}
-            このページを閉じると URL は無効になります
-          {/if}
-        </p>
         <Button
           variant="primary"
           disabled={currentStep !== 2 || !hasCopiedSourceUrl}
@@ -419,32 +421,40 @@
             </li>
           </ol>
         </div>
-        <Button
-          variant="secondary"
-          disabled={faceDetectionStatus?.type === "inProgress" ||
-            currentIrisOutStep !== "none"}
-          onclick={detectFacePosition}
-        >
-          {#if faceDetectionStatus?.type == "inProgress"}
-            <Spinner size="1rem" color="var(--color-base-foreground-default)" />
-          {:else}
-            <ScanFace class="size-4" />
-            顔の位置を検出
+        <div class="flex flex-col space-y-2">
+          <Button
+            variant="secondary"
+            disabled={faceDetectionStatus?.type === "inProgress" ||
+              currentIrisOutStep !== "none"}
+            onclick={detectFacePosition}
+          >
+            {#if faceDetectionStatus?.type == "inProgress"}
+              <Spinner
+                size="1rem"
+                color="var(--color-base-foreground-default)"
+              />
+            {:else}
+              <ScanFace class="size-4" />
+              顔の位置を検出
+            {/if}
+          </Button>
+          {#if faceDetectionStatus == undefined}
+            <p class="text-xs text-base-foreground-subtle">
+              顔の位置は未検出です
+            </p>
+          {:else if faceDetectionStatus.type === "inProgress"}
+            <p class="text-xs text-base-foreground-subtle">
+              顔の位置を検出中です…
+            </p>
+          {:else if faceDetectionStatus.type === "success"}
+            <p class="text-xs text-success">顔の位置を検出しました!</p>
+          {:else if faceDetectionStatus.type === "failure"}
+            <p class="text-xs text-destructive">
+              顔の位置を検出できませんでした
+            </p>
           {/if}
-        </Button>
-        {#if faceDetectionStatus == undefined}
-          <p class="text-sm text-base-foreground-subtle">
-            顔の位置は未検出です
-          </p>
-        {:else if faceDetectionStatus.type === "inProgress"}
-          <p class="text-sm text-base-foreground-subtle">
-            顔の位置を検出中です…
-          </p>
-        {:else if faceDetectionStatus.type === "success"}
-          <p class="text-sm text-success">顔の位置を検出しました!</p>
-        {:else if faceDetectionStatus.type === "failure"}
-          <p class="text-sm text-destructive">顔の位置を検出できませんでした</p>
-        {/if}
+        </div>
+
         <Button
           variant="primary"
           disabled={currentStep !== 3 ||
