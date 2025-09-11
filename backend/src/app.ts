@@ -1,5 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { SSEStreamingApi, streamSSE } from "hono/streaming";
 import {
   getStreamQuerySchema,
@@ -26,6 +27,12 @@ setInterval(() => {
 }, 1000 * 60 * 10);
 
 export const app = new Hono()
+  .use(
+    "*",
+    cors({
+      origin: import.meta.env.VITE_ALLOWED_ORIGIN,
+    })
+  )
   .post("/sources", (c) => {
     const id = crypto.randomUUID();
     const expiresAt = Date.now() + 1000 * 60 * 60 * 24;
