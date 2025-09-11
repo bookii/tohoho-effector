@@ -16,6 +16,14 @@ type Session = {
 
 const sessions = new Map<string, Session>();
 
+const logSessionCount = () => {
+  console.log(
+    `Current stream count: ${
+      Array.from(sessions.values()).filter((s) => s.stream).length
+    }`
+  );
+};
+
 setInterval(() => {
   const now = Date.now();
   sessions.forEach((session, id) => {
@@ -23,7 +31,7 @@ setInterval(() => {
       sessions.delete(id);
     }
   });
-  console.log(`Current session count: ${sessions.size}`);
+  logSessionCount();
 }, 1000 * 60 * 10);
 
 export const app = new Hono()
@@ -42,7 +50,6 @@ export const app = new Hono()
       stream: undefined,
     };
     sessions.set(id, session);
-    console.log(`Current session count: ${sessions.size}`);
     return c.json({
       id,
       url: `${c.req.header("origin")}/sources/${id}`,
@@ -74,7 +81,13 @@ export const app = new Hono()
       return c.json({ error: "Session not found or expired" }, 404);
     }
     return streamSSE(c, async (stream) => {
+      c.req.raw.signal.onabort = () => {
+        stream.abort();
+        sessions.delete(sourceId);
+        logSessionCount();
+      };
       session.stream = stream;
+      logSessionCount();
       while (true) {
         await stream.writeSSE({ data: "ping", event: "ping" });
         await stream.sleep(30000);
