@@ -15,6 +15,16 @@ type Session = {
 
 const sessions = new Map<string, Session>();
 
+setInterval(() => {
+  const now = Date.now();
+  sessions.forEach((session, id) => {
+    if (session.expiresAt < now) {
+      sessions.delete(id);
+    }
+  });
+  console.log(`Current session count: ${sessions.size}`);
+}, 1000 * 60 * 10);
+
 export const app = new Hono()
   .post("/sources", (c) => {
     const id = crypto.randomUUID();
@@ -25,6 +35,7 @@ export const app = new Hono()
       stream: undefined,
     };
     sessions.set(id, session);
+    console.log(`Current session count: ${sessions.size}`);
     return c.json({
       id,
       url: `${c.req.header("origin")}/sources/${id}`,
