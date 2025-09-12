@@ -8,3 +8,13 @@ OpenCV の animeface モデルを使用して、OBS Studio の仮想カメラの
 ## UI コンポーネントについて
 
 [Rabee UI](https://rabeeui.com/) を使用しています。
+
+## お借りした素材
+
+### ずんだもん立ち絵
+
+https://www.pixiv.net/artworks/92641351
+
+### 背景素材
+
+https://sozaino.site/archives/20850
