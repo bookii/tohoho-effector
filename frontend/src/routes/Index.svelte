@@ -411,7 +411,7 @@
             </Button>
           </div>
           <div class="space-y-1">
-            <p class="text-xs text-base-foreground-muted">
+            <p class="text-xs text-base-foreground-subtle">
               {#if sourceExpiresAt}
                 URLは <strong>
                   {new Date(sourceExpiresAt).toLocaleString()}
