@@ -138,19 +138,32 @@
     if (!mediaStream) {
       return;
     }
+
+    faceDetectionStatus = { type: "inProgress" };
+
     try {
-      const track = mediaStream?.getVideoTracks()[0];
-      if (!track) {
+      if (!videoStep1Element || videoStep1Element.readyState < 2) {
+        faceDetectionStatus = { type: "inProgress" };
         return;
       }
 
-      faceDetectionStatus = { type: "inProgress" };
-      const imageCapture = new ImageCapture(track);
-      console.log(`Taking photo for face detection...: ${imageCapture}`);
-      const blob = await imageCapture.takePhoto();
-      console.log(`Photo taken: ${blob}`);
-      const bitmap = await createImageBitmap(blob);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
+      if (!ctx) {
+        faceDetectionStatus = { type: "failure" };
+        return;
+      }
+
+      canvas.width = videoStep1Element.videoWidth || 1280;
+      canvas.height = videoStep1Element.videoHeight || 720;
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+
+      ctx.drawImage(videoStep1Element, 0, 0, canvas.width, canvas.height);
+
+      const bitmap: ImageBitmap = await createImageBitmap(canvas);
       const faces = await FaceDetectorService.detectFacePositions(bitmap);
       const selectedFace = weightedRandom(
         faces,
