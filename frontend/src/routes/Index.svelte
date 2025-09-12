@@ -5,12 +5,14 @@
   import Input from "@/lib/components/ui/atoms/Input.svelte";
   import Spinner from "@/lib/components/ui/atoms/Spinner.svelte";
   import Message from "@/lib/components/ui/items/Message.svelte";
+  import Dialog from "@/lib/components/ui/modals/Dialog.svelte";
   import * as FaceDetectorService from "@/lib/FaceDetectorService";
   import { IrisOutEffectAnimator } from "@/lib/IrisOutEffectAnimator";
   import * as MediaDeviceService from "@/lib/MediaDeviceService";
   import { weightedRandom } from "@/lib/utils";
   import {
     ClipboardCopy,
+    Info,
     Play,
     RotateCcw,
     ScanFace,
@@ -83,6 +85,7 @@
   let currentStep: 0 | 1 | 2 | 3 | 4 = $state(0);
   let deviceId: string | undefined = $state(undefined);
   let isFetchingDeviceId = $state(false);
+  let isPermissionDialogOpen = $state(false);
   let sourceId: string | undefined = $state(undefined);
   let sourceUrl: string | undefined = $state(undefined);
   let hasCopiedSourceUrl = $state(false);
@@ -338,9 +341,17 @@
                 {/if}
               </Button>
               {#if step1ErrorMessage}
-                <p class="text-xs text-destructive">
-                  {step1ErrorMessage}
-                </p>
+                <div class="flex flex-row items-center">
+                  <p class="text-xs text-destructive">
+                    {step1ErrorMessage}
+                  </p>
+                  <button
+                    class="flex ml-1"
+                    onclick={() => (isPermissionDialogOpen = true)}
+                  >
+                    <Info class="size-3.5 inline-block text-destructive" />
+                  </button>
+                </div>
               {/if}
             </div>
             <div class="relative">
@@ -610,5 +621,22 @@
     </a>)
   </footer>
 </div>
+
+<Dialog
+  dismissible={true}
+  positiveText="OK"
+  class="max-w-lg w-[80vw] m-auto"
+  bind:open={isPermissionDialogOpen}
+  onClick={() => (isPermissionDialogOpen = false)}
+>
+  <div class="flex flex-col space-y-4">
+    <p class="font-bold">アドレスバーからカメラの権限を許可してください。</p>
+    <img
+      src="/images/camera-permission.png"
+      alt="カメラの権限を許可する手順"
+      class="rounded-md"
+    />
+  </div>
+</Dialog>
 
 <svelte:window oncopy={onCopyWithCommand} />
