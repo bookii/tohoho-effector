@@ -76,6 +76,6 @@
 
 html,
 body {
-  font-family: "M PLUS Rounded 1c", serif;
+  font-family: "M PLUS Rounded 1c", sans-serif;
   overflow-y: auto !important;
 }
