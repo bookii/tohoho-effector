@@ -1,0 +1,51 @@
+# Multi-stage build for pnpm workspace (frontend + backend)
+FROM node:24.7.0-alpine3.21 AS base
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@10.15.1 --activate
+
+# Install dependencies
+FROM base AS deps
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/
+COPY shared/package.json ./shared/
+RUN pnpm install --frozen-lockfile
+
+# Build shared package
+FROM deps AS shared-builder
+COPY shared ./shared
+RUN pnpm --filter shared build
+
+# Build backend (depend on shared)
+FROM deps AS backend-builder
+COPY --from=shared-builder /app/shared ./shared
+COPY backend ./backend
+RUN pnpm --filter backend build:prod
+
+# Build frontend (depend on shared, backend)
+FROM deps AS frontend-builder
+COPY --from=shared-builder /app/shared ./shared
+COPY --from=backend-builder /app/backend ./backend
+COPY frontend ./frontend
+RUN pnpm --filter frontend build:prod
+
+# Production runner
+FROM base AS runner
+ENV NODE_ENV=production
+
+# Copy package files
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY backend/package.json ./backend/
+COPY shared/package.json ./shared/
+
+# Copy built files
+COPY --from=backend-builder --chown=node:node /app/backend/dist ./backend/dist
+COPY --from=shared-builder --chown=node:node /app/shared ./shared
+COPY --from=frontend-builder --chown=node:node /app/frontend/dist ./frontend/dist
+
+# Install production dependencies
+RUN pnpm install --prod --frozen-lockfile
+
+EXPOSE 3000
+USER node
+CMD ["node", "backend/dist/index.js"]

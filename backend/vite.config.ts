@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
         formats: ["es"],
       },
       rollupOptions: {
-        external: ["@hono/node-server"],
+        external: ["@hono/node-server", "@hono/node-server/serve-static"],
       },
     },
   };
