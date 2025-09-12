@@ -285,9 +285,11 @@
       </div>
     </div>
     <div class="relative">
-      <div
-        class="aspect-video rounded-md bg-base-container-primary object-contain"
-      ></div>
+      <img
+        src="/images/zunda.gif"
+        alt="とほほなずんだもん"
+        class="aspect-video rounded-md object-contain"
+      />
     </div>
     <Button
       variant="primary"

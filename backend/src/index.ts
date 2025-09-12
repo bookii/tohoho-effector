@@ -5,6 +5,7 @@ import { app } from "./app.js";
 if (process.env.NODE_ENV === "production") {
   app.use("/assets/*", serveStatic({ root: "./frontend/dist" }));
   app.use("/cascades/*", serveStatic({ root: "./frontend/dist" }));
+  app.use("/images/*", serveStatic({ root: "./frontend/dist" }));
   app.use(
     "*",
     serveStatic({
