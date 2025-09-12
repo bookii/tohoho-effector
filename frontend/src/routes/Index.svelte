@@ -357,15 +357,15 @@
             <div class="relative">
               <video
                 id="video-step1"
-                class="aspect-video rounded-md bg-base-container-primary object-contain"
+                class="aspect-video rounded-md bg-base-container-primary object-contain size-full"
                 autoplay
                 playsinline
               >
                 <track default kind="captions" />
               </video>
-              <Badge tone="filled" class="absolute top-3 left-3"
-                >仮想カメラの映像</Badge
-              >
+              <Badge tone="filled" class="absolute top-3 left-3">
+                仮想カメラの映像
+              </Badge>
             </div>
             <Button
               variant="primary"
@@ -599,11 +599,11 @@
               </video>
               <canvas
                 id="irisout-canvas"
-                class="pointer-events-none absolute inset-0 h-full w-full"
+                class="pointer-events-none absolute inset-0 size-full"
               ></canvas>
-              <Badge tone="filled" class="absolute top-3 left-3"
-                >仮想カメラの映像</Badge
-              >
+              <Badge tone="filled" class="absolute top-3 left-3">
+                仮想カメラの映像
+              </Badge>
             </div>
           </Card>
         </div>
