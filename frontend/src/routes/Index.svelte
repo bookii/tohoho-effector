@@ -138,18 +138,19 @@
     if (!mediaStream) {
       return;
     }
-    const track = mediaStream?.getVideoTracks()[0];
-    if (!track) {
-      return;
-    }
-
-    faceDetectionStatus = { type: "inProgress" };
-    const blob = await new ImageCapture(
-      mediaStream.getVideoTracks()[0]
-    ).takePhoto();
-    const bitmap = await createImageBitmap(blob);
-
     try {
+      const track = mediaStream?.getVideoTracks()[0];
+      if (!track) {
+        return;
+      }
+
+      faceDetectionStatus = { type: "inProgress" };
+      const imageCapture = new ImageCapture(track);
+      console.log(`Taking photo for face detection...: ${imageCapture}`);
+      const blob = await imageCapture.takePhoto();
+      console.log(`Photo taken: ${blob}`);
+      const bitmap = await createImageBitmap(blob);
+
       const faces = await FaceDetectorService.detectFacePositions(bitmap);
       const selectedFace = weightedRandom(
         faces,
