@@ -613,8 +613,10 @@
   <footer class="mt-auto py-4 text-center text-sm text-muted-foreground">
     &copy; {new Date().getFullYear()} mizznoff (<a
       target="_blank"
-      href="https://x.com/mizz_noff">X</a
-    >
+      href="https://github.com/bookii/tohoho-effector/blob/main/terms-of-service.md"
+      >ご利用について
+    </a>
+    / <a target="_blank" href="https://x.com/mizz_noff">X</a>
     / <a target="_blank" href="https://mizznoff.booth.pm">BOOTH</a> /
     <a target="_blank" href="https://github.com/bookii/tohoho-effector">
       GitHub
