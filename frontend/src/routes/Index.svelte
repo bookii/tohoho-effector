@@ -8,6 +8,7 @@
   import * as FaceDetectorService from "@/lib/FaceDetectorService";
   import { IrisOutEffectAnimator } from "@/lib/IrisOutEffectAnimator";
   import * as MediaDeviceService from "@/lib/MediaDeviceService";
+  import { weightedRandom } from "@/lib/utils";
   import {
     ClipboardCopy,
     Play,
@@ -147,12 +148,17 @@
 
     try {
       const faces = await FaceDetectorService.detectFacePositions(bitmap);
+      const selectedFace = weightedRandom(
+        faces,
+        // 顔の大きさで重みづけする
+        faces.map((face) => face.width * face.height)
+      );
       faceDetectionStatus =
         faces.length > 0
           ? {
               type: "success",
               position: {
-                ...faces[Math.floor(Math.random() * faces.length)],
+                ...selectedFace,
                 bitmapWidth: bitmap.width,
                 bitmapHeight: bitmap.height,
               },
