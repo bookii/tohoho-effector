@@ -11,7 +11,7 @@ export type IrisOutEffectConfig = {
 export class IrisOutEffectAnimator {
   private animationFrame?: number;
   private currentRadius: number | undefined;
-  private isAnimating = false;
+  private hasStarted = false;
   private config: IrisOutEffectConfig;
 
   constructor(config: IrisOutEffectConfig) {
@@ -20,7 +20,7 @@ export class IrisOutEffectAnimator {
 
   public animate(targetStep: IrisOutEffectStep): Promise<void> {
     return new Promise((resolve) => {
-      if (this.isAnimating) {
+      if (this.hasStarted) {
         this.cancel();
       }
 
@@ -82,7 +82,6 @@ export class IrisOutEffectAnimator {
       }
 
       const startTime = performance.now();
-      this.isAnimating = true;
 
       const frame = (now: number) => {
         const elapsed = now - startTime;
@@ -105,19 +104,21 @@ export class IrisOutEffectAnimator {
         ctx.fill();
         ctx.restore();
 
-        if (progress === 0) {
-          this.config.onAnimationStart?.();
-        } else if (progress < 1) {
+        if (!this.hasStarted) {
+          this.hasStarted = true;
+          this.config.onAnimationStart();
+        }
+
+        if (progress < 1) {
           this.animationFrame = requestAnimationFrame(frame);
         } else {
-          this.isAnimating = false;
+          this.hasStarted = false;
           this.currentRadius = endRadius;
-          this.config.onAnimationEnd?.();
+          this.config.onAnimationEnd();
           resolve();
         }
       };
       this.animationFrame = requestAnimationFrame(frame);
-      resolve();
     });
   }
 
@@ -126,7 +127,7 @@ export class IrisOutEffectAnimator {
       cancelAnimationFrame(this.animationFrame);
       this.animationFrame = undefined;
     }
-    this.isAnimating = false;
+    this.hasStarted = false;
   }
 
   private radiusFromFaceCenter(

@@ -461,7 +461,8 @@
           <Button
             variant="secondary"
             disabled={faceDetectionStatus?.type === "inProgress" ||
-              currentIrisOutStep !== "none"}
+              currentIrisOutStep !== "none" ||
+              isAnimating}
             onclick={detectFacePosition}
           >
             {#if faceDetectionStatus?.type == "inProgress"}
