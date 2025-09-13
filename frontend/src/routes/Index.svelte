@@ -99,6 +99,7 @@
   let currentIrisOutStep: IrisOutEffectStep = $state("none");
   let isAnimating = $state(false);
   let videoStep1Element: HTMLVideoElement | undefined = $state(undefined);
+  let videoStep4Element: HTMLVideoElement | undefined = $state(undefined);
   let mediaStream: MediaStream | undefined = $state(undefined);
   let trackResolution: { width: number; height: number } | undefined =
     $state(undefined);
@@ -156,8 +157,12 @@
 
     faceDetectionStatus = { type: "inProgress" };
 
+    const videoElement =
+      videoStep1Element && videoStep1Element.readyState >= 2
+        ? videoStep1Element
+        : videoStep4Element;
     try {
-      if (!videoStep1Element || videoStep1Element.readyState < 2) {
+      if (!videoElement || videoElement.readyState < 2) {
         faceDetectionStatus = { type: "inProgress" };
         return;
       }
@@ -173,13 +178,13 @@
         return;
       }
 
-      canvas.width = videoStep1Element.videoWidth || 1280;
-      canvas.height = videoStep1Element.videoHeight || 720;
+      canvas.width = videoElement.videoWidth || 1280;
+      canvas.height = videoElement.videoHeight || 720;
 
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = "high";
 
-      ctx.drawImage(videoStep1Element, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
       const bitmap: ImageBitmap = await createImageBitmap(canvas);
       const faces = await FaceDetectorService.detectFacePositions(bitmap);
@@ -239,12 +244,9 @@
   const goToStep4 = async () => {
     currentStep = 4;
     await tick();
-    const videoStep4Element = document.getElementById("video-step4");
-    if (
-      videoStep4Element &&
-      videoStep4Element instanceof HTMLVideoElement &&
-      mediaStream
-    ) {
+    const element = document.getElementById("video-step4");
+    if (element && element instanceof HTMLVideoElement && mediaStream) {
+      videoStep4Element = element;
       videoStep4Element.srcObject = mediaStream;
       if (videoStep1Element) {
         videoStep1Element.srcObject = null;

@@ -22,7 +22,6 @@ export const ensureCameraAccess = async (): Promise<void> => {
 export const fetchVirtualCameraId = async (): Promise<string> => {
   const mediaDevices = await navigator.mediaDevices.enumerateDevices();
 
-  console.log(mediaDevices);
   const device = mediaDevices
     .filter((device) => device.kind === "videoinput")
     .find((device) => device.label === "OBS Virtual Camera");
