@@ -53,10 +53,10 @@
       return undefined;
     }
     const canvasElement = document.getElementById(
-      "irisout-canvas"
+      "irisout-canvas",
     ) as HTMLCanvasElement;
     const videoElement = document.getElementById(
-      "video-step4"
+      "video-step4",
     ) as HTMLVideoElement;
     if (
       !canvasElement ||
@@ -94,6 +94,7 @@
     | { type: "inProgress" }
     | { type: "success"; position: IrisOutEffectFacePosition }
     | { type: "failure" }
+    | { type: "error"; message: string }
     | undefined = $state(undefined);
   let currentIrisOutStep: IrisOutEffectStep = $state("none");
   let isAnimating = $state(false);
@@ -151,7 +152,10 @@
       const ctx = canvas.getContext("2d");
 
       if (!ctx) {
-        faceDetectionStatus = { type: "failure" };
+        faceDetectionStatus = {
+          type: "error",
+          message: "Canvas is not supported.",
+        };
         return;
       }
 
@@ -168,7 +172,7 @@
       const selectedFace = weightedRandom(
         faces,
         // 顔の大きさで重みづけする
-        faces.map((face) => face.width * face.height)
+        faces.map((face) => face.width * face.height),
       );
       faceDetectionStatus =
         faces.length > 0
@@ -181,8 +185,9 @@
               },
             }
           : { type: "failure" };
-    } catch (error) {
-      faceDetectionStatus = { type: "failure" };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      faceDetectionStatus = { type: "error", message };
     }
   };
 
@@ -531,6 +536,10 @@
               {:else if faceDetectionStatus.type === "failure"}
                 <p class="text-xs text-destructive">
                   顔の位置を検出できませんでした
+                </p>
+              {:else if faceDetectionStatus.type === "error"}
+                <p class="text-xs text-destructive">
+                  {faceDetectionStatus.message}
                 </p>
               {/if}
             </div>
