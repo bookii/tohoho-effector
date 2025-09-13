@@ -654,7 +654,7 @@
       {/if}
     </div>
   </main>
-  <footer class="mt-auto py-4 text-center text-sm text-muted-foreground">
+  <footer class="mt-auto p-4 text-center text-sm text-muted-foreground">
     &copy; {new Date().getFullYear()} mizznoff (<a
       target="_blank"
       href="https://github.com/bookii/tohoho-effector/blob/main/terms-of-service.md"
