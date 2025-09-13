@@ -53,10 +53,10 @@
       return undefined;
     }
     const canvasElement = document.getElementById(
-      "irisout-canvas"
+      "irisout-canvas",
     ) as HTMLCanvasElement;
     const videoElement = document.getElementById(
-      "video-step4"
+      "video-step4",
     ) as HTMLVideoElement;
     if (
       !canvasElement ||
@@ -94,6 +94,7 @@
     | { type: "inProgress" }
     | { type: "success"; position: IrisOutEffectFacePosition }
     | { type: "failure" }
+    | { type: "error"; message: string }
     | undefined = $state(undefined);
   let currentIrisOutStep: IrisOutEffectStep = $state("none");
   let isAnimating = $state(false);
@@ -101,8 +102,13 @@
   let mediaStream: MediaStream | undefined = $state(undefined);
   let trackResolution: { width: number; height: number } | undefined =
     $state(undefined);
-  let step1ErrorMessage: string | undefined = $state(undefined);
-  let step4ErrorMessage: string | undefined = $state(undefined);
+  let step1Error:
+    | { type: "notAuthorized"; message: string }
+    | { type: "notDetected"; message: string }
+    | { type: "apiError"; message: string }
+    | undefined = $state(undefined);
+  let isStep2Failed = $state(false);
+  let isStep4Failed = $state(false);
 
   const apiClient = createClient(import.meta.env.VITE_API_BASE_URL);
 
@@ -110,51 +116,77 @@
     try {
       isFetchingDeviceId = true;
       await MediaDeviceService.ensureCameraAccess();
-      deviceId = await MediaDeviceService.fetchVirtualCameraId();
-      mediaStream = await MediaDeviceService.fetchMediaStream(deviceId);
-      const trackSettings = mediaStream!.getVideoTracks()[0].getSettings();
-      if (trackSettings.width && trackSettings.height) {
-        trackResolution = {
-          width: trackSettings.width,
-          height: trackSettings.height,
-        };
-      }
-      let element = document.getElementById("video-step1");
-      if (element && element instanceof HTMLVideoElement) {
-        videoStep1Element = element;
-        videoStep1Element.srcObject = mediaStream;
-      }
-      step1ErrorMessage = undefined;
     } catch (error: unknown) {
       if (error instanceof Error) {
-        step1ErrorMessage = error.message;
+        step1Error = { type: "notAuthorized", message: error.message };
       }
-    } finally {
       isFetchingDeviceId = false;
+      return;
     }
+    try {
+      deviceId = await MediaDeviceService.fetchVirtualCameraId();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        step1Error = { type: "notDetected", message: error.message };
+      }
+      isFetchingDeviceId = false;
+      return;
+    }
+    mediaStream = await MediaDeviceService.fetchMediaStream(deviceId);
+    const trackSettings = mediaStream!.getVideoTracks()[0].getSettings();
+    if (trackSettings.width && trackSettings.height) {
+      trackResolution = {
+        width: trackSettings.width,
+        height: trackSettings.height,
+      };
+    }
+    let element = document.getElementById("video-step1");
+    if (element && element instanceof HTMLVideoElement) {
+      videoStep1Element = element;
+      videoStep1Element.srcObject = mediaStream;
+    }
+    isFetchingDeviceId = false;
+    step1Error = undefined;
   };
 
   const detectFacePosition = async () => {
     if (!mediaStream) {
       return;
     }
-    const track = mediaStream?.getVideoTracks()[0];
-    if (!track) {
-      return;
-    }
 
     faceDetectionStatus = { type: "inProgress" };
-    const blob = await new ImageCapture(
-      mediaStream.getVideoTracks()[0]
-    ).takePhoto();
-    const bitmap = await createImageBitmap(blob);
 
     try {
+      if (!videoStep1Element || videoStep1Element.readyState < 2) {
+        faceDetectionStatus = { type: "inProgress" };
+        return;
+      }
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      if (!ctx) {
+        faceDetectionStatus = {
+          type: "error",
+          message: "Canvas is not supported.",
+        };
+        return;
+      }
+
+      canvas.width = videoStep1Element.videoWidth || 1280;
+      canvas.height = videoStep1Element.videoHeight || 720;
+
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
+
+      ctx.drawImage(videoStep1Element, 0, 0, canvas.width, canvas.height);
+
+      const bitmap: ImageBitmap = await createImageBitmap(canvas);
       const faces = await FaceDetectorService.detectFacePositions(bitmap);
       const selectedFace = weightedRandom(
         faces,
         // 顔の大きさで重みづけする
-        faces.map((face) => face.width * face.height)
+        faces.map((face) => face.width * face.height),
       );
       faceDetectionStatus =
         faces.length > 0
@@ -167,8 +199,9 @@
               },
             }
           : { type: "failure" };
-    } catch (error) {
-      faceDetectionStatus = { type: "failure" };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Unknown error";
+      faceDetectionStatus = { type: "error", message };
     }
   };
 
@@ -188,7 +221,7 @@
       });
     } catch (error: unknown) {
       if (error instanceof Error) {
-        step1ErrorMessage = error.message;
+        step1Error = { type: "apiError", message: error.message };
         return;
       }
     }
@@ -229,7 +262,7 @@
       hasCopiedSourceUrl = true;
     } catch (error: unknown) {
       if (error instanceof Error) {
-        step1ErrorMessage = error.message;
+        isStep2Failed = true;
       }
     }
   };
@@ -265,7 +298,7 @@
         },
       });
     } catch (_: unknown) {
-      step4ErrorMessage = "エフェクトの反映に失敗しました";
+      isStep4Failed = true;
       return;
     }
     currentIrisOutStep = step;
@@ -340,17 +373,19 @@
                   仮想カメラの映像を取得
                 {/if}
               </Button>
-              {#if step1ErrorMessage}
+              {#if step1Error !== undefined}
                 <div class="flex flex-row items-center">
                   <p class="text-xs text-destructive">
-                    {step1ErrorMessage}
+                    {step1Error.message}
                   </p>
-                  <button
-                    class="flex ml-1"
-                    onclick={() => (isPermissionDialogOpen = true)}
-                  >
-                    <Info class="size-3.5 inline-block text-destructive" />
-                  </button>
+                  {#if step1Error.type === "notAuthorized"}
+                    <button
+                      class="flex ml-1"
+                      onclick={() => (isPermissionDialogOpen = true)}
+                    >
+                      <Info class="size-3.5 inline-block text-destructive" />
+                    </button>
+                  {/if}
                 </div>
               {/if}
             </div>
@@ -442,6 +477,11 @@
                 </Button>
               </div>
               <div class="space-y-1">
+                {#if isStep2Failed}
+                  <p class="text-xs text-destructive">
+                    URLのコピーに失敗しました
+                  </p>
+                {/if}
                 <p class="text-xs text-base-foreground-subtle">
                   {#if sourceExpiresAt}
                     URLは <strong>
@@ -518,6 +558,10 @@
                 <p class="text-xs text-destructive">
                   顔の位置を検出できませんでした
                 </p>
+              {:else if faceDetectionStatus.type === "error"}
+                <p class="text-xs text-destructive">
+                  {faceDetectionStatus.message}
+                </p>
               {/if}
             </div>
 
@@ -583,9 +627,9 @@
                 元に戻す
               </Button>
             </div>
-            {#if step4ErrorMessage}
+            {#if isStep4Failed}
               <p class="text-xs text-destructive">
-                {step4ErrorMessage}
+                エフェクトの反映に失敗しました
               </p>
             {/if}
             <div class="relative">
@@ -610,7 +654,7 @@
       {/if}
     </div>
   </main>
-  <footer class="mt-auto py-4 text-center text-sm text-muted-foreground">
+  <footer class="mt-auto p-4 text-center text-sm text-muted-foreground">
     &copy; {new Date().getFullYear()} mizznoff (<a
       target="_blank"
       href="https://github.com/bookii/tohoho-effector/blob/main/terms-of-service.md"
