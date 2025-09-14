@@ -76,8 +76,14 @@
 
 html,
 body {
-  font-family: "M PLUS 1p", sans-serif;
+  font-family: "M PLUS 2", sans-serif;
   overflow-y: auto !important;
+}
+
+.yusei-magic-regular {
+  font-family: "Yusei Magic", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
 a {

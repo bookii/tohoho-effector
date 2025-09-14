@@ -53,10 +53,10 @@
       return undefined;
     }
     const canvasElement = document.getElementById(
-      "irisout-canvas",
+      "irisout-canvas"
     ) as HTMLCanvasElement;
     const videoElement = document.getElementById(
-      "video-step4",
+      "video-step4"
     ) as HTMLVideoElement;
     if (
       !canvasElement ||
@@ -191,7 +191,7 @@
       const selectedFace = weightedRandom(
         faces,
         // 顔の大きさで重みづけする
-        faces.map((face) => face.width * face.height),
+        faces.map((face) => face.width * face.height)
       );
       faceDetectionStatus =
         faces.length > 0
@@ -313,7 +313,9 @@
     <div class="mx-auto max-w-3xl space-y-4 p-4">
       <div id="step0" class="flex flex-col space-y-6 px-6 pt-8 pb-10">
         <div class="flex flex-col items-center space-y-4">
-          <h1 class="text-3xl font-bold">とほほエフェクター</h1>
+          <h1 class="text-3xl font-bold yusei-magic-regular">
+            とほほエフェクター
+          </h1>
           <div>
             <p class="text-center text-sm/relaxed text-base-foreground-muted">
               「とほほ…もうこりごりだよ〜」のエフェクト (アイリスアウト)
