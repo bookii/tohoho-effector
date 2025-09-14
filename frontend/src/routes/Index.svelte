@@ -653,7 +653,7 @@
               </video>
               <canvas
                 id="irisout-canvas"
-                class="pointer-events-none absolute inset-0 size-full"
+                class="pointer-events-none rounded-md absolute inset-0 size-full"
               ></canvas>
               <Badge tone="filled" class="absolute top-3 left-3">
                 仮想カメラの映像
