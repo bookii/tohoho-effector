@@ -36,44 +36,6 @@
   --color-primary-on-fill: #eff6ff;
 }
 
-@layer theme {
-  .dark {
-    /* container */
-    --color-base-container-default: #09090b;
-    --color-base-container-primary: #fafafa;
-    --color-base-container-muted: #27272a;
-    --color-base-container-accent: #18181b;
-    --color-base-container-subarea-accent: #27272a;
-
-    /* foreground */
-    --color-base-foreground-default: #fafafa;
-    --color-base-foreground-accent: #fafafa;
-    --color-base-foreground-muted: #a1a1aa;
-    --color-base-foreground-subtle: #71717a;
-    --color-base-foreground-on-fill-inverse: #18181b;
-    --color-base-foreground-on-fill-bright: #fafafa;
-    --color-base-foreground-subarea-default: #f4f4f5;
-    --color-base-foreground-subarea-accent: #fafafa;
-
-    /* stroke */
-    --color-base-stroke-default: #3f3f46;
-
-    /* surface */
-    --color-base-surface-default: #09090b;
-    --color-base-surface-subarea-default: #18181b;
-
-    /* function */
-    --color-destructive: #b91c1c;
-    --color-destructive-on-fill: #fef2f2;
-    --color-warning: #f59e0b;
-    --color-warning-on-fill: #18181b;
-    --color-success: #15803d;
-    --color-success-on-fill: #f0fdf4;
-    --color-primary: #1d4ed8;
-    --color-primary-on-fill: #eff6ff;
-  }
-}
-
 html,
 body {
   font-family: "M PLUS 2", sans-serif;
