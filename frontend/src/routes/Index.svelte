@@ -600,7 +600,9 @@
               <Button
                 class="flex-1/3"
                 variant="primary"
-                disabled={currentIrisOutStep !== "none" || isAnimating}
+                disabled={faceDetectionStatus?.type !== "success" ||
+                  currentIrisOutStep !== "none" ||
+                  isAnimating}
                 onclick={() => {
                   updateIrisOutStep("focused");
                 }}
@@ -611,7 +613,9 @@
               <Button
                 class="flex-1/3"
                 variant="primary"
-                disabled={currentIrisOutStep !== "focused" || isAnimating}
+                disabled={faceDetectionStatus?.type !== "success" ||
+                  currentIrisOutStep !== "focused" ||
+                  isAnimating}
                 onclick={() => {
                   updateIrisOutStep("hidden");
                 }}
@@ -622,7 +626,9 @@
               <Button
                 class="flex-1/3"
                 variant="secondary"
-                disabled={currentIrisOutStep === "none" || isAnimating}
+                disabled={faceDetectionStatus?.type !== "success" ||
+                  currentIrisOutStep === "none" ||
+                  isAnimating}
                 onclick={() => {
                   updateIrisOutStep("none");
                 }}
