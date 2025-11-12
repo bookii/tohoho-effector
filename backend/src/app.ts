@@ -18,11 +18,9 @@ type Session = {
 const sessions = new Map<string, Session>();
 
 const logSessionCount = () => {
-  console.log(
-    `Current stream count: ${
-      Array.from(sessions.values()).filter((s) => s.stream).length
-    }`
-  );
+  const dateTime = new Date().toISOString();
+  const streamCount = Array.from(sessions.values()).filter((s) => s.stream).length;
+  console.log(`[${dateTime}] Current stream count: ${streamCount}`);
 };
 
 setInterval(() => {
